@@ -124,10 +124,10 @@ module.exports.getUserStats = async (userID) => {
       _id: userID,
     });
     return {
-      user: user.username,
-      first: user.wonGames.first,
-      second: user.wonGames.second,
-      played: user.playedGames,
+      username: user.username,
+      wonGamesFirst: user.wonGames.first,
+      wonGamesSecond: user.wonGames.second,
+      playedGames: user.playedGames,
     };
   } catch (err) {
     throw err;
