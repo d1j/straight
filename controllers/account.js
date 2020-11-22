@@ -58,7 +58,7 @@ const logOut = async (req, res) => {
   }
 };
 
-const getStats = async (req, res) => {
+const stats = async (req, res) => {
   try {
     let data = await dbAcc.getUserStats(req.userID);
     res.status(200).json(data);
@@ -71,4 +71,4 @@ const getStats = async (req, res) => {
 module.exports.register = register;
 module.exports.logIn = logIn;
 module.exports.logOut = logOut;
-module.exports.getStats = getStats;
+module.exports.stats = stats;

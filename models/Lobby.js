@@ -21,7 +21,7 @@ const LobbySchema = new Schema({
       playerID: { type: Number },
       numCards: { type: Number },
       status: { type: String, default: "playing" },
-    },
+    }, //TODO: think I should add {_id: false}, here
   ],
   cards: [Card],
   previousPlayer: { type: Schema.Types.ObjectId, ref: "User" },

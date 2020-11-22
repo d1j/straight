@@ -55,6 +55,6 @@ router.post("/logout", dbAcc.auth, accControl.logOut);
     played: "_Number_ Number of games a user has played in total."
  * }
  */
-router.post("/stats", dbAcc.auth, accControl.getStats);
+router.post("/stats", dbAcc.auth, accControl.stats);
 
 module.exports = router;

@@ -73,7 +73,7 @@ module.exports.auth = async (req, res, next) => {
 
     if (typeof req.body.token == "undefined") {
       if (typeof req.cookies.token == "undefined") {
-        throw "No token is given";
+        throw "No token is provided";
       } else {
         token = req.cookies.token;
       }
