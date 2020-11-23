@@ -12,7 +12,9 @@ const cors = require("cors");
 
 const Account = require("./routes/account");
 const Lobby = require("./routes/lobby");
-const Test = require("./routes/test");
+const Admin = require("./routes/admin");
+
+const socket = require("./socks/index");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -23,7 +25,7 @@ app.use(express.static(path.join(__dirname, "build")));
 
 app.use("/account", Account);
 app.use("/lobby", Lobby);
-app.use("/test", Test);
+app.use("/admin", Admin);
 
 //Serves react app
 app.get("/", (req, res) => {
@@ -33,7 +35,7 @@ app.get("/", (req, res) => {
 app.use("/", (req, res) => res.status(404).send("404, path does not exist"));
 
 //initialize node app.
-app.listen(config.get("appPort"), () => {
+http.listen(config.get("appPort"), () => {
   if (process.env.NODE_ENV !== "test")
     console.log(`App listening at http://localhost:${config.get("appPort")}`);
 });
@@ -42,6 +44,7 @@ app.listen(config.get("appPort"), () => {
 const { host, port, name } = config.get("dbConfig");
 if (process.env.NODE_ENV !== "test") console.log("Connecting to MongoDB...");
 const dbUrl = `mongodb://${host}:${port}/${name}`;
+//some random settings deprecation warnings recommended me to set.
 const dbConfig = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -58,5 +61,7 @@ mongoose.connect(dbUrl, dbConfig).then(
     console.log(err);
   }
 );
+
+socket.init(http);
 
 module.exports = app;

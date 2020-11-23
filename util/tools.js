@@ -20,27 +20,3 @@ function currentTime() {
 }
 
 module.exports.currentTime = currentTime;
-
-let HTTP_CTR = 2;
-
-module.exports.httpCtr = () => {
-  return HTTP_CTR;
-};
-
-module.exports.incrHttpCtr = () => {
-  HTTP_CTR += 2;
-};
-
-module.exports.httpLog = (req, req_num, type, message = "") => {
-  console.log(
-    `-- [${currentTime()}] (HTTP|${req.method}|${type}) {${req_num}} ${
-      req.originalUrl
-    } ${message}.`
-  );
-};
-
-module.exports.logSocks = (sockID, path, message = "") => {
-  console.log(
-    `~~ [${currentTime()}] (SOCKET.IO) [${sockID}] [${path}] ${message}.`
-  );
-};
