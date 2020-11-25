@@ -54,7 +54,7 @@ const check = async ({ socket, io }) => {
 
     data = await dbGame.processCheck(lobbyID);
 
-    await new Promise((r) => setTimeout(r, 5000));
+    await new Promise((r) => setTimeout(r, 2000));
 
     io.to(lobbyID).emit("hand-result", {
       lostPlayer: data.lostPlayer,

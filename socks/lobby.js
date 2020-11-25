@@ -146,8 +146,20 @@ const disconnect = async ({ socket }) => {
   }
 };
 
+const message = async ({ io, socket, message }) => {
+  try {
+    let { userID, lobbyID } = socket.customProps;
+    let playerID = await dbLob.getPlayerID(userID, lobbyID);
+    io.to(lobbyID).emit("message", { playerID: playerID, message });
+  } catch (err) {
+    console.log("!!! [Socket.IO](message) Error in listener.");
+    console.log(err);
+  }
+};
+
 module.exports.joinLobby = joinLobby;
 module.exports.leaveLobby = leaveLobby;
 module.exports.readyToStartGame = readyToStartGame;
 module.exports.hostStartsGame = hostStartsGame;
 module.exports.disconnect = disconnect;
+module.exports.message = message;

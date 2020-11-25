@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const gl = require("../src/gameLogic");
 
 const Lobby = require("../models/Lobby");
+const User = require("../models/User");
 
 /** Initializes the following:
  * numCards, currentPlayer, players.numCards
@@ -158,6 +159,7 @@ module.exports.getAllCards = async (lobbyID) => {
   }
 };
 
+//TODO: Restructure. function is probably too big and complicated.
 module.exports.processCheck = async (lobbyID) => {
   try {
     let lobby = await Lobby.findOne({

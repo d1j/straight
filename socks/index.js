@@ -11,6 +11,7 @@ module.exports.init = (http) => {
   io = socketio(http);
 
   //middleware for query data extraction
+
   io.use(async (socket, next) => {
     try {
       let data, userID;
@@ -74,6 +75,10 @@ module.exports.init = (http) => {
 
     socket.on("disconnect", async () => {
       lobSock.disconnect({ io, socket });
+    });
+
+    socket.on("message", async (message) => {
+      lobSock.message({ io, socket, message });
     });
 
     socket.on("call", async (data) => {
