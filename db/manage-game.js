@@ -1,0 +1,270 @@
+const mongoose = require("mongoose");
+
+const gl = require("../src/gameLogic");
+
+const Lobby = require("../models/Lobby");
+
+/** Initializes the following:
+ * numCards, currentPlayer, players.numCards
+ */
+module.exports.initGame = async (lobbyID) => {
+  try {
+    let lobby = await Lobby.findOne({
+      _id: mongoose.Types.ObjectId(lobbyID),
+    });
+    let numPlayers = lobby.playerCount;
+    //Set how many cards should be on the table at the moment
+    lobby.numCards = numPlayers;
+    //Deal each player a single card
+    for (let i = 0; i < numPlayers; i++) {
+      lobby.players[i].numCards = 1;
+    }
+    //Find starting player
+    let leastID = Number.MAX_SAFE_INTEGER;
+    let startingID;
+    for (let i = 0; i < lobby.players.length; i++) {
+      if (lobby.players[i].playerID < leastID) {
+        leastID = lobby.players[i].playerID;
+        startingID = lobby.players[i]._id;
+      }
+    }
+    //Set starting player
+    lobby.currentPlayer = startingID;
+    await lobby.save();
+    return;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**Deals cards, assigns cards to each player, saves information about the dealt cards in a database and returns necessary data to deal players cards each individually. */
+module.exports.dealCards = async (lobbyID) => {
+  try {
+    let lobby = await Lobby.findOne({
+      _id: mongoose.Types.ObjectId(lobbyID),
+    });
+
+    //Generate cards
+    let cards = gl.dealCards(lobby.numCards);
+
+    lobby.cards = cards;
+
+    //Assign each player their personal cards
+    for (let i = 0; i < lobby.players.length; i++) {
+      if (lobby.players[i].status == "playing")
+        lobby.players[i].cards = cards.splice(0, lobby.players[i].numCards);
+    }
+
+    await lobby.save();
+
+    return { players: lobby.players, currentPlayer: lobby.currentPlayer };
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports.checkIfUserIsCurrentPlayer = async (userID, lobbyID) => {
+  try {
+    let lobby = await Lobby.findOne({
+      _id: mongoose.Types.ObjectId(lobbyID),
+    }).select("currentPlayer");
+    if (lobby.currentPlayer.toString() == userID) return true;
+    return false;
+  } catch (err) {
+    throw err;
+  }
+};
+
+function getIndexOfNextPlayer(lobby) {
+  try {
+    //Sort the players in array
+    // WARNING! Not entirely sure if sorting will work properly when implemented this way, thus I would go straight to here in case there were issues with call order.
+    function compare(a, b) {
+      return a.playerID - b.playerID;
+    }
+    lobby.players = lobby.players.sort(compare);
+
+    let index = -1;
+
+    for (let i = 0; i < lobby.players.length; i++) {
+      if (lobby.players[i]._id.toString() == lobby.currentPlayer.toString()) {
+        index = i;
+      }
+    }
+    if (index == -1) {
+      throw "Current player was not found in the player list of a lobby.";
+    }
+
+    do {
+      //Find the index of a next player
+      if (index + 1 == lobby.players.length) {
+        index = 0;
+      } else {
+        ++index;
+      }
+    } while (lobby.players[index].status != "playing");
+
+    return index;
+  } catch (err) {
+    throw err;
+  }
+}
+
+/**
+ * {
+ *  isCallValid: true/false,
+ *  nextPlayerID: playerID,
+ * }
+ */
+module.exports.processCall = async (data, lobbyID) => {
+  try {
+    let lobby = await Lobby.findOne({
+      _id: mongoose.Types.ObjectId(lobbyID),
+    });
+
+    //Check if call is valid
+    // WARNING! Combination comparison is not properly tested on the server side.
+    if (gl.compareCombs(data, lobby.currentCall)) {
+      //Call is greater than the current call, thus valid
+      //Find the index of a next player
+      let nextIndex = getIndexOfNextPlayer(lobby);
+      //Set the userID of the next current player
+      lobby.previousPlayer = lobby.currentPlayer;
+      lobby.currentPlayer = lobby.players[nextIndex]._id;
+      lobby.currentCall = data;
+      await lobby.save();
+      //Return the next playerID
+      return {
+        isCallValid: true,
+        nextPlayerID: lobby.players[nextIndex].playerID,
+      };
+    } else {
+      //Call is not higher than the current call
+      return { isCallValid: false };
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports.getAllCards = async (lobbyID) => {
+  try {
+    let lobby = await Lobby.findOne({
+      _id: mongoose.Types.ObjectId(lobbyID),
+    }).select("+players -players._id");
+    return lobby.players.toObject();
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports.processCheck = async (lobbyID) => {
+  try {
+    let lobby = await Lobby.findOne({
+      _id: mongoose.Types.ObjectId(lobbyID),
+    });
+    //Check if the call forms up and determine winner/loser
+    let loserID, winnerID;
+    if (
+      gl.checkIfCombIsPresent(lobby.currentCall, lobby.numCards, lobby.cards)
+    ) {
+      loserID = lobby.currentPlayer;
+      winnerID = lobby.previousPlayer;
+    } else {
+      loserID = lobby.previousPlayer;
+      winnerID = lobby.currentPlayer;
+    }
+    //Check if lost player does not get a 5th card
+    let loserIndex, winnerIndex;
+    for (let i = 0; i < lobby.players.length; i++) {
+      if (lobby.players[i]._id.toString() == loserID.toString()) {
+        loserIndex = i;
+      }
+      if (lobby.players[i]._id.toString() == winnerID.toString()) {
+        winnerIndex = i;
+      }
+    }
+
+    let result = {
+      isPlayerOut: false,
+      isGameOver: false,
+      lostPlayer: lobby.players[loserIndex].playerID,
+      wonPlayer: lobby.players[winnerIndex].playerID,
+    };
+
+    if (lobby.players[loserIndex].numCards == 4) {
+      //Player is out of the game
+      lobby.players[loserIndex].numCards = -1;
+      lobby.players[loserIndex].status = "spectating";
+      lobby.players[loserIndex].cards = [];
+      lobby.numCards -= 4;
+      result.isPlayerOut = true;
+      //Check if lost player did not end the game
+      let numPlayersLeft = 0;
+      for (let i = 0; i < lobby.players.length; i++) {
+        if (lobby.players[i].status == "playing") {
+          numPlayersLeft++;
+        }
+      }
+      if (numPlayersLeft < 2) {
+        //The game should end
+        result.isGameOver = true;
+
+        lobby.currentCall = { comb: -1, rankA: -1, rankB: -1, suit: -1 };
+        lobby.status = "open";
+        lobby.cards = [];
+        lobby.currentPlayer = null;
+        lobby.previousPlayer = null;
+        lobby.numCards = null;
+
+        for (let i = 0; i < lobby.players.length; i++) {
+          lobby.players[i].status = "playing";
+          lobby.players[i].cards = [];
+          lobby.players[i].numCards = -1;
+          let user = await User.findOne({ _id: lobby.players[i]._id });
+          if (user._id.toString() == winnerID.toString()) {
+            user.wonGames.first++;
+          } else if (user._id.toString() == loserID.toString()) {
+            user.wonGames.second++;
+          }
+          user.playedGames++;
+          await user.save();
+        }
+        await lobby.save();
+        return result;
+      }
+    } else {
+      //Player gets another card
+      lobby.players[loserIndex].numCards++;
+      lobby.numCards++;
+    }
+
+    //Determine the next player
+    lobby.currentPlayer = loserID;
+    let nextIndex = getIndexOfNextPlayer(lobby);
+    lobby.currentPlayer = lobby.players[nextIndex]._id;
+    lobby.previousPlayer = null;
+    result.currentPlayer = lobby.players[nextIndex].playerID;
+
+    //Deal cards
+    //Generate cards
+    let cards = gl.dealCards(lobby.numCards);
+
+    lobby.cards = cards;
+
+    //Assign each player their personal cards
+    for (let i = 0; i < lobby.players.length; i++) {
+      if (lobby.players[i].status == "playing")
+        lobby.players[i].cards = cards.splice(0, lobby.players[i].numCards);
+    }
+
+    result.players = lobby.players;
+    lobby.currentCall = { comb: -1, rankA: -1, rankB: -1, suit: -1 };
+
+    await lobby.save();
+
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};

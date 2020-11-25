@@ -18,5 +18,14 @@ function currentTime() {
     second: "2-digit",
   });
 }
-
 module.exports.currentTime = currentTime;
+
+module.exports.logSocks = (sockID, path, message = "") => {
+  console.log(
+    `~~ [${currentTime()}] (SOCKET.IO) [${sockID}] [${path}] ${message}.`
+  );
+};
+
+module.exports.logSocksErr = (err) => {
+  console.log(`!!! [Socket.IO] Error in listener [Socket.IO](${err}).`);
+};

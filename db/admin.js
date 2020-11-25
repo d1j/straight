@@ -5,7 +5,7 @@ const Lobby = require("../models/Lobby");
  */
 module.exports.clearLobbies = async () => {
   try {
-    await Lobby.remove({});
+    await Lobby.deleteMany({});
     return;
   } catch (err) {
     throw err;

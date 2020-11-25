@@ -56,6 +56,7 @@ const isUserInLobby = async (userID, lobbyID) => {
     throw err;
   }
 };
+module.exports.isUserInLobby = isUserInLobby;
 
 /**
  * Adds player to the specified lobby.
@@ -149,7 +150,9 @@ module.exports.getJoinLobbyInfo = async (userID, lobbyID) => {
 module.exports.getLobbyList = async (page, lobbiesOnPage, searchString) => {
   try {
     if (typeof searchString === "undefined" || searchString === "") {
-      return await Lobby.find({ status: { $eq: "open" } })
+      return await Lobby.find({
+        /*status: { $eq: "open"*/
+      })
         .select("name playerCount status requiresPassword")
         .sort({ playerCount: "desc" })
         .skip((page - 1) * lobbiesOnPage)
@@ -161,6 +164,136 @@ module.exports.getLobbyList = async (page, lobbiesOnPage, searchString) => {
         .skip((page - 1) * lobbiesOnPage)
         .limit(lobbiesOnPage);
     }
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**Assigns socket ID to a player in database. Returns necessary information about the new user.
+ * @param {String} lobbyID
+ * @param {String} userID
+ * @param {String} socketID
+ * Return: { 
+ * playerID: 0,
+ * isHost: false,
+ * isUser: false,  
+ * _id: {  
+      wonGames: { first: 0, second: 0 },
+      playedGames: 0,
+      username: '123456789',
+      }
+   }
+ */
+module.exports.joinLobbyWithSocks = async (lobbyID, userID) => {
+  try {
+    let lob = await Lobby.findOne({ _id: lobbyID })
+      .select("players")
+      .populate("players._id", "-password -email -__v -token");
+
+    let lobby = lob.toObject();
+    let user;
+
+    for (let i = 0; i < lobby.players.length; i++) {
+      if (lobby.players[i]._id._id == userID) {
+        user = lobby.players[i];
+      }
+    }
+    delete user.cards;
+    delete user._id._id;
+    user.isHost = false;
+    user.isUser = false;
+
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**
+ * Removes user from lobby. Returns removed player ID and (if the one that left was a host) new host player ID.
+ */
+module.exports.removeFromLobby = async (userID, lobbyID) => {
+  try {
+    let lob = await Lobby.findOne({ _id: lobbyID }).select(
+      "-__v -password -requiresPassword -status -players.cards -cards"
+    );
+
+    let newHostID = -1;
+    let leftPlayerID = -1;
+    let leftPlayerIndex = -1;
+    if (lob.playerCount == 1) {
+      //delete lobby
+      await Lobby.deleteOne({ _id: lobbyID });
+      return;
+    } else {
+      //find user's player ID.
+      for (let i = 0; i < lob.players.length; i++) {
+        if (String(lob.players[i]._id) == String(userID)) {
+          leftPlayerID = lob.players[i].playerID;
+          leftPlayerIndex = i;
+        }
+      }
+      //remove player from players array.
+      lob.players.splice(leftPlayerIndex, 1);
+
+      //check if host must be changed
+      if (String(lob.ruler) == String(userID)) {
+        lob.ruler = mongoose.Types.ObjectId(lob.players[0]._id);
+        newHostID = lob.players[0].playerID;
+      }
+      lob.playerCount--;
+    }
+
+    await lob.save();
+
+    return { leftPlayerID, newHostID };
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports.getNumPlayersInLobby = async (lobbyID) => {
+  try {
+    let lob = await Lobby.findOne({ _id: lobbyID });
+    return lob.playerCount;
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports.getPlayerID = async (userID, lobbyID) => {
+  try {
+    let lobby = await Lobby.findOne({ _id: lobbyID });
+    let playerID = -1;
+    lobby.players.forEach((player) => {
+      if (player._id.toString() == userID.toString()) {
+        playerID = player.playerID;
+      }
+    });
+    return playerID;
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports.changeLobbyStatus = async (lobbyID, status) => {
+  try {
+    let lobby = await Lobby.findOne({ _id: lobbyID });
+    lobby.status = status;
+    await lobby.save();
+    return;
+  } catch (err) {
+    throw err;
+  }
+};
+
+module.exports.isUserHostOfALobby = async (userID, lobbyID) => {
+  try {
+    let lob = await Lobby.findOne({ _id: lobbyID });
+    if (lob.ruler == userID) {
+      return true;
+    }
+    return false;
   } catch (err) {
     throw err;
   }

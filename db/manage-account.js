@@ -91,6 +91,8 @@ module.exports.auth = async (req, res, next) => {
     if (!user) {
       throw "Authenticated user not found";
     }
+
+    //TODO: probably sketchy. Refine
     req.token = token;
     req.user = user;
     req.userID = decoded._id;
@@ -129,6 +131,30 @@ module.exports.getUserStats = async (userID) => {
       wonGamesSecond: user.wonGames.second,
       playedGames: user.playedGames,
     };
+  } catch (err) {
+    throw err;
+  }
+};
+
+/** If token is valid and returns userID
+ * User authentication middleware used with Socket.io connection
+ * @param {String} token
+ * @return {String} userID
+ */
+module.exports.isTokenValid = async (token) => {
+  try {
+    const decoded = jwt.verify(token, config.get("jwtSecret"));
+
+    const user = await User.findOne({
+      _id: decoded._id,
+      token: token,
+    });
+
+    if (!user) {
+      throw "User not found in database. Unauthorized.";
+    }
+
+    return decoded._id;
   } catch (err) {
     throw err;
   }
