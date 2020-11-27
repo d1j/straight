@@ -5,7 +5,7 @@ const gl = require("../src/gameLogic");
 const Lobby = require("../models/Lobby");
 const User = require("../models/User");
 
-/** Initializes the following:
+/** Used at the start of the game. Initializes the following:
  * numCards, currentPlayer, players.numCards
  */
 module.exports.initGame = async (lobbyID) => {
@@ -76,10 +76,11 @@ module.exports.checkIfUserIsCurrentPlayer = async (userID, lobbyID) => {
   }
 };
 
+/** Returns index of the player who has to make a choice. WARNING: When dealing with player array, indexes and call order, player array must be sorted by playerID. */
 function getIndexOfNextPlayer(lobby) {
   try {
     //Sort the players in array
-    // WARNING! Not entirely sure if sorting will work properly when implemented this way, thus I would go straight to here in case there were issues with call order.
+    // WARNING: Not entirely sure if sorting will work properly when implemented this way, thus I would go straight to here in case there were issues with call order.
     function compare(a, b) {
       return a.playerID - b.playerID;
     }
@@ -111,10 +112,15 @@ function getIndexOfNextPlayer(lobby) {
   }
 }
 
-/**
+/** Checks if the new call is higher than the currentCall.
+ * If yes, sets a new call and next player.
  * {
- *  isCallValid: true/false,
+ *  isCallValid: true,
  *  nextPlayerID: playerID,
+ * }
+ * If no, returs the following:
+ * {
+ *  isCallValid: false
  * }
  */
 module.exports.processCall = async (data, lobbyID) => {
@@ -131,7 +137,7 @@ module.exports.processCall = async (data, lobbyID) => {
       let nextIndex = getIndexOfNextPlayer(lobby);
       //Set the userID of the next current player
       lobby.previousPlayer = lobby.currentPlayer;
-      lobby.currentPlayer = lobby.players[nextIndex]._id;
+      lobby.currentPlayer = lobby.players[nextIndex]._id; //TODO: sketchy if mongo arrays are not guaranteed main to order.
       lobby.currentCall = data;
       await lobby.save();
       //Return the next playerID
@@ -148,6 +154,7 @@ module.exports.processCall = async (data, lobbyID) => {
   }
 };
 
+/** Returns player array with userID emitted. TODO: poor function name.*/
 module.exports.getAllCards = async (lobbyID) => {
   try {
     let lobby = await Lobby.findOne({
@@ -159,13 +166,24 @@ module.exports.getAllCards = async (lobbyID) => {
   }
 };
 
-//TODO: Restructure. function is probably too big and complicated.
+/** Processes check request. Returns the following data:
+ *  {
+      isPlayerOut: true/false,
+      isGameOver: true/false,
+      lostPlayer: playerID,
+      wonPlayer: playerID,
+    };
+ */
+//TODO: Restructure. Function is probably too big and complicated.
 module.exports.processCheck = async (lobbyID) => {
   try {
     let lobby = await Lobby.findOne({
       _id: mongoose.Types.ObjectId(lobbyID),
     });
-    //Check if the call forms up and determine winner/loser
+
+    //TOOD: Check if a call has been made yet.
+
+    //Check if the call forms up and determine winner/loser.
     let loserID, winnerID;
     if (
       gl.checkIfCombIsPresent(lobby.currentCall, lobby.numCards, lobby.cards)
@@ -176,7 +194,7 @@ module.exports.processCheck = async (lobbyID) => {
       loserID = lobby.previousPlayer;
       winnerID = lobby.currentPlayer;
     }
-    //Check if lost player does not get a 5th card
+    //Check if lost player does not get a 5th card.
     let loserIndex, winnerIndex;
     for (let i = 0; i < lobby.players.length; i++) {
       if (lobby.players[i]._id.toString() == loserID.toString()) {
@@ -195,13 +213,13 @@ module.exports.processCheck = async (lobbyID) => {
     };
 
     if (lobby.players[loserIndex].numCards == 4) {
-      //Player is out of the game
+      //Player is out of the game.
       lobby.players[loserIndex].numCards = -1;
       lobby.players[loserIndex].status = "spectating";
       lobby.players[loserIndex].cards = [];
       lobby.numCards -= 4;
       result.isPlayerOut = true;
-      //Check if lost player did not end the game
+      //Check if lost player did not end the game.
       let numPlayersLeft = 0;
       for (let i = 0; i < lobby.players.length; i++) {
         if (lobby.players[i].status == "playing") {
@@ -209,7 +227,7 @@ module.exports.processCheck = async (lobbyID) => {
         }
       }
       if (numPlayersLeft < 2) {
-        //The game should end
+        //The game should end.
         result.isGameOver = true;
 
         lobby.currentCall = { comb: -1, rankA: -1, rankB: -1, suit: -1 };
@@ -236,25 +254,25 @@ module.exports.processCheck = async (lobbyID) => {
         return result;
       }
     } else {
-      //Player gets another card
+      //Player gets another card.
       lobby.players[loserIndex].numCards++;
       lobby.numCards++;
     }
 
-    //Determine the next player
+    //Determine the next player.
     lobby.currentPlayer = loserID;
     let nextIndex = getIndexOfNextPlayer(lobby);
-    lobby.currentPlayer = lobby.players[nextIndex]._id;
+    lobby.currentPlayer = lobby.players[nextIndex]._id; //TODO: once again, sketchy if mongo arrays are not guaranteed to main order.
     lobby.previousPlayer = null;
     result.currentPlayer = lobby.players[nextIndex].playerID;
 
-    //Deal cards
-    //Generate cards
+    //Deal cards.
+    //Generate cards.
     let cards = gl.dealCards(lobby.numCards);
 
     lobby.cards = cards;
 
-    //Assign each player their personal cards
+    //Assign each player their personal cards.
     for (let i = 0; i < lobby.players.length; i++) {
       if (lobby.players[i].status == "playing")
         lobby.players[i].cards = cards.splice(0, lobby.players[i].numCards);

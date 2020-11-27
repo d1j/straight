@@ -6,6 +6,10 @@ const User = require("../models/User");
 
 chai.use(chaiHttp);
 
+/** Basic unit tests for account management.
+ * The tests do not exhaust every possible real-life scenarios.
+ * The tests were written just to check how they work and what would be the purpose of them. */
+
 describe("Account", () => {
   let testBody = {
     username: "test",
@@ -26,7 +30,7 @@ describe("Account", () => {
           done();
         });
     });
-    //TODO: test what happens when creds length is out of bounds
+    //TODO: Run tests when creds length is out of bounds
   });
   describe("/POST login", () => {
     it('it should log in a user, set "token" cookie and return token in the body', (done) => {
@@ -44,7 +48,7 @@ describe("Account", () => {
           done();
         });
     });
-    //TODO: test what happens when body is not set/specified poorly.
+    //TODO: Run test when body is not set/specified poorly.
   });
   describe("/POST stats", () => {
     it("it should return user stats", (done) => {
@@ -65,7 +69,7 @@ describe("Account", () => {
           done();
         });
     });
-    //TODO: test how it behaves when provided with wrong/no token.
+    //TODO: Run test with wrong/no token provided.
   });
   describe("/POST logout", () => {
     it("it should log user out of the system and reset cookie token", (done) => {
@@ -83,6 +87,6 @@ describe("Account", () => {
           done();
         });
     });
-    //TODO: test how it behaves when provided with wrong/no token.
+    //TODO: Run test with wrong/no token provided.
   });
 });

@@ -27,30 +27,33 @@ app.use("/account", Account);
 app.use("/lobby", Lobby);
 app.use("/admin", Admin);
 
-//Serves react app
+//This would serve Ract app.
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname + "/build/index.html"));
 });
 
 app.use("/", (req, res) => res.status(404).send("404, path does not exist"));
 
-//initialize node app.
+//Initialize node app.
 http.listen(config.get("appPort"), () => {
   if (process.env.NODE_ENV !== "test")
     console.log(`App listening at http://localhost:${config.get("appPort")}`);
 });
 
-//dadatabase connection initialization
+//Dadatabase connection initialization
 const { host, port, name } = config.get("dbConfig");
 if (process.env.NODE_ENV !== "test") console.log("Connecting to MongoDB...");
 const dbUrl = `mongodb://${host}:${port}/${name}`;
-//some random settings deprecation warnings recommended me to set.
+
+//Some settings deprecation warnings recommended me to set.
 const dbConfig = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
 };
 mongoose.set("useCreateIndex", true);
+
+//Establishing connection with DB.
 mongoose.connect(dbUrl, dbConfig).then(
   () => {
     if (process.env.NODE_ENV !== "test")

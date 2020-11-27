@@ -1,3 +1,12 @@
+/** The whole gameLogic.js code wasn't written by me. Creds go to Karolis Paulauskas. */
+
+/** Given the required number of cards to deal, deals cards. Returns cards in the following structure:
+ * [
+ *  {s: 0, r: 1},
+ *  {s: 3, r: 3},
+ *  ...
+ * ]
+ */
 function dealCards(numCards) {
   let allCards = [];
   let dealtCards = [];
@@ -19,7 +28,9 @@ function dealCards(numCards) {
   return dealtCards;
 }
 
-/**Checks a call; Returns true, if combination exists; Returns false otherwise.
+/**Checks a call.
+ * Returns true, if combination exists.
+ * Returns false otherwise.
  * Params: Current combination(obj); Number of dealt cards(Number); All dealt cards(arr_of_obj); Number of Players(let). */
 function checkIfCombIsPresent(call, totalCards, dealtCards) {
   let combinationValid = false;
@@ -27,60 +38,60 @@ function checkIfCombIsPresent(call, totalCards, dealtCards) {
   switch (
     call.comb //Checks each combination using functions;
   ) {
-    case 0:
+    case 0: //High card
       if (isContained(dealtCards, totalCards, 1, call)) combinationValid = true;
       break;
 
-    case 1:
+    case 1: //Pair
       if (isContained(dealtCards, totalCards, 2, call)) combinationValid = true;
       break;
 
-    case 2:
+    case 2: //Two Pairs
       if (totalCards > 3) {
         if (isPaired(dealtCards, totalCards, 2, call)) combinationValid = true;
       }
       break;
 
-    case 3:
+    case 3: //Three of a kind
       if (totalCards > 2) {
         if (isContained(dealtCards, totalCards, 3, call))
           combinationValid = true;
       }
       break;
 
-    case 4:
+    case 4: //Straight
       if (totalCards > 4) {
         if (isStraight(dealtCards, totalCards, call)) combinationValid = true;
       }
       break;
 
-    case 5:
+    case 5: //Flush
       if (totalCards > 4) {
         if (isFlush(dealtCards, totalCards, call)) combinationValid = true;
       }
       break;
 
-    case 6:
+    case 6: //Full house
       if (totalCards > 4) {
         if (isPaired(dealtCards, totalCards, 3, call)) combinationValid = true;
       }
       break;
 
-    case 7:
+    case 7: //Four of a kind
       if (totalCards > 3) {
         if (isContained(dealtCards, totalCards, 4, call))
           combinationValid = true;
       }
       break;
 
-    case 8:
+    case 8: //Straight from 9 flush
       if (totalCards > 4) {
         if (isStraightFlush(dealtCards, totalCards, call, 0))
           combinationValid = true;
       }
       break;
 
-    case 9:
+    case 9: //Royal flush
       if (totalCards > 4) {
         if (isStraightFlush(dealtCards, totalCards, call, 1))
           combinationValid = true;
@@ -91,7 +102,7 @@ function checkIfCombIsPresent(call, totalCards, dealtCards) {
 }
 
 /**Compares two combinations and returns Boolean(true) if the first combintion is greater than the second one.
- * Return Boolean(false) otherwise.
+ * Returns Boolean(false) otherwise.
  * IMPORTANT: When calling a full-house rankA represents three of a kind and rankB represents a pair.
  */
 function compareCombs(comb1, comb2) {
@@ -283,7 +294,6 @@ function isStraight(dealtCards, totalCards, currentCall) {
     }
     if (!contains) {
       return false;
-      break;
     }
   }
   return true;
@@ -312,7 +322,6 @@ function isStraightFlush(dealtCards, totalCards, currentCall, rank) {
     }
     if (contains == false) {
       return false;
-      break;
     }
   }
   return true;

@@ -3,7 +3,7 @@ const router = require("express").Router();
 const lobControl = require("../controllers/lobby");
 const dbAcc = require("../db/manage-account");
 
-/** /lobby/create Request to create a lobby.
+/** Creates a lobby.
  * Request body:
  * {
     lobbyName: "_String_required_",
@@ -16,7 +16,7 @@ const dbAcc = require("../db/manage-account");
  */
 router.post("/create", dbAcc.auth, lobControl.create);
 
-/** /lobby/join Request to join a lobby.
+/** Adds user to a lobby.
  * Request body:
  * {
     lobbyID: "_String_required_",
@@ -53,10 +53,10 @@ router.post("/create", dbAcc.auth, lobControl.create);
  */
 router.post("/join", dbAcc.auth, lobControl.join);
 
-/** /lobby/list Request to return a list of available servers and brief information about each one of them.
+/** Returns a list of available servers and brief information about each one of them.
  * Request body:
  * {
-    page: "_Number_ Which page of lobby list a client would like to view."
+    page: "_Number_ Starting with 1. Which page of lobby list a client would like to view."
     lobbiesOnPage: "_Number_ Number of lobbies a client would like to dispay on a page."
     search: "_String_ Search lobby by name. String can be empty."
  * }

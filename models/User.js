@@ -16,10 +16,12 @@ const UserSchema = new Schema({
   email: { type: String, required: true, index: { unique: true }, trim: true },
   wonGames: {
     first: {
+      //Times user placed first
       type: Number,
       default: 0,
     },
     second: {
+      //Times user placed second
       type: Number,
       default: 0,
     },
@@ -28,6 +30,11 @@ const UserSchema = new Schema({
     type: Number,
     default: 0,
   },
+  /**Token probably shouldn't be stored like that. 
+  If was wondering how the first user would become unauthorized in case second one logged in on another platform with the same account.
+  My solution was to store the token server-side and always compare it with the token I receive from client.
+  I guess I should have looked into something called "sessions".
+  */
   token: {
     type: String,
     required: false,
@@ -58,6 +65,7 @@ UserSchema.pre("save", function (next) {
 });
 
 //Password checking method
+//NOTICE: I should consider using these methods more. They look convenient.
 UserSchema.methods.comparePassword = async function (candidatePassword) {
   try {
     return await bcrypt.compare(candidatePassword, this.password);

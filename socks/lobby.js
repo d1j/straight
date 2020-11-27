@@ -3,6 +3,9 @@ const cache = require("../util/cache");
 const dbLob = require("../db/manage-lobby");
 const dbGame = require("../db/manage-game");
 
+/** Emits the following:
+ * 'new-player-in-lobby' Example of return data: { playerID: 0, isHost: false, isUser: false, _id: { wonGames: { first: 0, second: 0 }, playedGames: 0, username: '123456789', } }
+ */
 const joinLobby = async ({ io, socket }) => {
   try {
     let { userID, lobbyID } = socket.customProps;
@@ -26,6 +29,9 @@ const joinLobby = async ({ io, socket }) => {
   }
 };
 
+/** Emits the following:
+ * 'player-left' Example of return data: { leftPlayerID: 0, newHostID: 1 }
+ */
 const leaveLobby = async ({ socket }) => {
   try {
     let { userID, lobbyID } = socket.customProps;
@@ -43,6 +49,13 @@ const leaveLobby = async ({ socket }) => {
   }
 };
 
+/** Emits the following:
+ * ~ [in all cases] 'player-is-ready' Return data: playerID.
+ * ~ [when all players are ready] 'all-players-are-ready' Return data: None.
+ * ~ [at the start of the game/first round] 'current-player' Return data: playerID.
+ * ~ [at the start of the game/first round] 'dealt-cards' Return data: individual player card {s: , r: }
+ * ~ [when all the information is provided and hand can be started] 'started-hand' Return data: None.
+ */
 const readyToStartGame = async ({ io, socket }) => {
   try {
     let { userID, lobbyID } = socket.customProps;
@@ -105,6 +118,9 @@ const readyToStartGame = async ({ io, socket }) => {
   }
 };
 
+/** Emits the following:
+ * 'game-is-starting' Return data: None.
+ */
 const hostStartsGame = async ({ io, socket }) => {
   try {
     //TODO: Check how the system would behave after two sequential host-game-starts.
@@ -146,6 +162,9 @@ const disconnect = async ({ socket }) => {
   }
 };
 
+/** Emits the following:
+ * 'message' Return data example: {playerID: 0, message: "Yes"}
+ */
 const message = async ({ io, socket, message }) => {
   try {
     let { userID, lobbyID } = socket.customProps;

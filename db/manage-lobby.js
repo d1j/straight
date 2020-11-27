@@ -173,16 +173,16 @@ module.exports.getLobbyList = async (page, lobbiesOnPage, searchString) => {
  * @param {String} lobbyID
  * @param {String} userID
  * @param {String} socketID
- * Return: { 
+ * Return: {
  * playerID: 0,
  * isHost: false,
- * isUser: false,  
- * _id: {  
-      wonGames: { first: 0, second: 0 },
-      playedGames: 0,
-      username: '123456789',
-      }
-   }
+ * isUser: false,
+ * _id: {
+ *  wonGames: { first: 0, second: 0 },
+ *    playedGames: 0,
+ *    username: '123456789',
+ *    }
+ * }
  */
 module.exports.joinLobbyWithSocks = async (lobbyID, userID) => {
   try {
@@ -261,6 +261,7 @@ module.exports.getNumPlayersInLobby = async (lobbyID) => {
   }
 };
 
+/** Returns playerID given the userID and lobbyID. */
 module.exports.getPlayerID = async (userID, lobbyID) => {
   try {
     let lobby = await Lobby.findOne({ _id: lobbyID });
@@ -276,6 +277,7 @@ module.exports.getPlayerID = async (userID, lobbyID) => {
   }
 };
 
+/** Changes lobby status field with to provided `status` string. */
 module.exports.changeLobbyStatus = async (lobbyID, status) => {
   try {
     let lobby = await Lobby.findOne({ _id: lobbyID });
@@ -287,6 +289,7 @@ module.exports.changeLobbyStatus = async (lobbyID, status) => {
   }
 };
 
+/** Checks if userID is host of a lobbyID and returns true/false. */
 module.exports.isUserHostOfALobby = async (userID, lobbyID) => {
   try {
     let lob = await Lobby.findOne({ _id: lobbyID });

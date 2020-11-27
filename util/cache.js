@@ -1,8 +1,30 @@
+/**Simple cache system I implemented for storing socketID//userID pairs and tracking lobby clients that are ready to begin the game.
+ * I think I should have used a proper DB instead of this implementation.
+ * Redis sounds like an option here.
+ * It could be that implementing sessions would eliminate the need of the following data storage.
+ */
+
+/** Cache structure
+ *  USP = [
+ *    {userID: 1, sockID: 2},
+ *    {userID: 3, sockID: 3},
+ *    {userID: 4, sockID: 12},
+ *    ...
+ *  ]
+ *
+ *  RDY = [
+ *    {lobbyID: 123, users: [1,3,4]},
+ *    {lobbyID: 124, users: [5,6]},
+ *    ...
+ *  ]
+ */
+
 const currTime = require("./tools").currentTime;
 
 let USP = [];
 let RDY = [];
 
+/** Checks if userID is stored in the cache. Returns true/false. TODO: poor function name. */
 function findUser(userID) {
   for (let i = 0; i < USP.length; i++) {
     if (USP[i].userID == userID) {
@@ -12,6 +34,7 @@ function findUser(userID) {
   return { found: false, index: -1 };
 }
 
+/** Checks if lobbyID is stored in the cache. Returns true/false. TODO: poor function name. */
 function findLobby(lobbyID) {
   for (let i = 0; i < RDY.length; i++) {
     if (RDY[i].lobbyID == lobbyID) {
@@ -49,6 +72,7 @@ module.exports.removeUserSocketPair = (userID) => {
   }
 };
 
+/** Finds and returns socketID by userID. */
 module.exports.userIDToSocketID = (userID) => {
   try {
     let { found, index } = findUser(userID);
@@ -64,7 +88,7 @@ module.exports.userIDToSocketID = (userID) => {
   }
 };
 
-/**Returns how many users are now waiting in the lobby. */
+/** Returns the number of users that are currently waiting in the lobby. */
 module.exports.addUserToReadyList = (userID, lobbyID) => {
   try {
     let { found, index } = findLobby(lobbyID);
@@ -80,6 +104,7 @@ module.exports.addUserToReadyList = (userID, lobbyID) => {
   }
 };
 
+/** Removes lobby from cache. */
 module.exports.removeLobby = (lobbyID) => {
   try {
     let { found, index } = findLobby(lobbyID);
@@ -95,6 +120,7 @@ module.exports.removeLobby = (lobbyID) => {
   }
 };
 
+/** ADMIN functions ahead. TODO: Should they be stored in a separate file? */
 module.exports._clearCache = () => {
   try {
     USP = [];
@@ -118,7 +144,7 @@ module.exports.getDataInHTML = () => {
     <table><thead><tr><th>userID</th><th>sockID</th></tr></thead><tbody>${userList}</tbody></table>`;
 
     let readyList = "";
-    //map the key-value pair array into HTML code
+    // Map the key-value pair array into HTML code.
     for (let i = 0; i < RDY.length; i++) {
       readyList += `<tr><td>${
         RDY[i].lobbyID + "</td><td><ul><li>" + RDY[i].users.join("</li><li>")
@@ -144,18 +170,3 @@ module.exports.getDataInHTML = () => {
 module.exports.getDataInJSON = () => {
   return { USP, RDY };
 };
-
-/** Cache structure
- *  USP = [
- *    {userID: 1, sockID: 2},
- *    {userID: 3, sockID: 3},
- *    {userID: 4, sockID: 12},
- *    ...
- *  ]
- *
- *  RDY = [
- *    {lobbyID: 123, users: [1,3,4]},
- *    {lobbyID: 124, users: [5,6]},
- *    ...
- *  ]
- * */

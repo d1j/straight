@@ -10,6 +10,7 @@ const register = async (req, res) => {
 
     let userAccCredReqs = config.get("userAccCredReqs");
 
+    //Check if provided creds meet length requirements.
     if (req.body.username.length < userAccCredReqs.minUserLength)
       throw `Username is too short. Min length required: ${userAccCredReqs.minUserLength}`;
     if (req.body.username.length > userAccCredReqs.maxUserLength)
@@ -38,9 +39,12 @@ const logIn = async (req, res) => {
     tools.contentCheck(req.body, ["email", "password"]);
 
     let token = await dbAcc.logIn(req.body);
+
     res.cookie("token", token, {
+      //TODO: I should probably consider a better maxAge value.
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
     res.status(200).json({ token: token });
   } catch (err) {
     console.log(err);
