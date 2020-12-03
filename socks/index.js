@@ -65,7 +65,7 @@ module.exports.init = (http) => {
       lobSock.leaveLobby({ io, socket });
     });
 
-    /** Should be called after host has started the game and client has prepared front-end to start the game. */
+    /** Should be called after host has started the game and client has prepared the front-end to start the game. */
     socket.on("ready-to-start-game", async () => {
       lobSock.readyToStartGame({ io, socket });
     });
