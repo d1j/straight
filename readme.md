@@ -1,6 +1,6 @@
 # Straight from 10
 
-[Brief description and rules of the game](https://github.com/d1j/straight/wiki/Game-description/)
+[Brief description and rules of the game](https://github.com/d1j/straight/wiki/Brief-description-and-rules)
 
 ## Back-end service
 
