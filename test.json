@@ -1,0 +1,614 @@
+{
+  "aggregate": {
+    "sloc": {
+      "logical": 252,
+      "physical": 323
+    },
+    "cyclomatic": 97,
+    "halstead": {
+      "operators": {
+        "distinct": 29,
+        "total": 469,
+        "identifiers": [
+          "function",
+          "let",
+          "=",
+          "[]",
+          "for",
+          "<",
+          "++ (postfix)",
+          ".",
+          "+",
+          "*",
+          "{}",
+          ":",
+          "()",
+          "-",
+          "-- (postfix)",
+          "return",
+          "switch",
+          "case",
+          "if",
+          "break",
+          ">",
+          "else",
+          ":?",
+          "&&",
+          "!==",
+          "default",
+          "==",
+          ">=",
+          "! (prefix)"
+        ]
+      },
+      "operands": {
+        "distinct": 60,
+        "total": 512,
+        "identifiers": [
+          "dealCards",
+          "numCards",
+          "allCards",
+          "<anonymous>",
+          "dealtCards",
+          "left",
+          24,
+          "current",
+          0,
+          "i",
+          4,
+          "j",
+          6,
+          "s",
+          "r",
+          "Math",
+          "random",
+          "floor",
+          "push",
+          1,
+          "checkIfCombIsPresent",
+          "call",
+          "totalCards",
+          "combinationValid",
+          false,
+          "comb",
+          "isContained",
+          true,
+          2,
+          3,
+          "isPaired",
+          "isStraight",
+          5,
+          "isFlush",
+          7,
+          8,
+          "isStraightFlush",
+          9,
+          "compareCombs",
+          "comb1",
+          "comb2",
+          "validity",
+          "containedValidity",
+          "checkA",
+          "checkB",
+          "checkSuit",
+          "rankA",
+          "rankB",
+          "\"!!! unexpected behaviour @game-logic.js\"",
+          "console",
+          "log",
+          "ammount",
+          "currentCall",
+          "total",
+          "contains",
+          "totalB",
+          "suit",
+          "rank",
+          "module",
+          "exports"
+        ]
+      },
+      "length": 981,
+      "vocabulary": 89,
+      "difficulty": 123.73333333333333,
+      "volume": 6352.694495778036,
+      "effort": 786040.0656109357,
+      "bugs": 2.117564831926012,
+      "time": 43668.892533940874
+    },
+    "params": 24,
+    "line": 10,
+    "cyclomaticDensity": 38.492063492063494
+  },
+  "functions": [
+    {
+      "name": "dealCards",
+      "sloc": {
+        "logical": 18,
+        "physical": 20
+      },
+      "cyclomatic": 4,
+      "halstead": {
+        "operators": {
+          "distinct": 15,
+          "total": 47,
+          "identifiers": [
+            "let",
+            "=",
+            "[]",
+            "for",
+            "<",
+            "++ (postfix)",
+            ".",
+            "+",
+            "*",
+            "{}",
+            ":",
+            "()",
+            "-",
+            "-- (postfix)",
+            "return"
+          ]
+        },
+        "operands": {
+          "distinct": 19,
+          "total": 50,
+          "identifiers": [
+            "numCards",
+            "allCards",
+            "<anonymous>",
+            "dealtCards",
+            "left",
+            24,
+            "current",
+            0,
+            "i",
+            4,
+            "j",
+            6,
+            "s",
+            "r",
+            "Math",
+            "random",
+            "floor",
+            "push",
+            1
+          ]
+        },
+        "length": 97,
+        "vocabulary": 34,
+        "difficulty": 19.736842105263158,
+        "volume": 493.483895601283,
+        "effort": 9739.813728972691,
+        "bugs": 0.16449463186709434,
+        "time": 541.100762720705
+      },
+      "params": 1,
+      "line": 10,
+      "cyclomaticDensity": 22.22222222222222
+    },
+    {
+      "name": "checkIfCombIsPresent",
+      "sloc": {
+        "logical": 51,
+        "physical": 68
+      },
+      "cyclomatic": 29,
+      "halstead": {
+        "operators": {
+          "distinct": 10,
+          "total": 71,
+          "identifiers": [
+            "let",
+            "=",
+            "switch",
+            ".",
+            "case",
+            "if",
+            "()",
+            "break",
+            ">",
+            "return"
+          ]
+        },
+        "operands": {
+          "distinct": 22,
+          "total": 102,
+          "identifiers": [
+            "call",
+            "totalCards",
+            "dealtCards",
+            "combinationValid",
+            false,
+            "comb",
+            0,
+            1,
+            "isContained",
+            true,
+            2,
+            3,
+            "isPaired",
+            4,
+            "isStraight",
+            5,
+            "isFlush",
+            6,
+            7,
+            8,
+            "isStraightFlush",
+            9
+          ]
+        },
+        "length": 173,
+        "vocabulary": 32,
+        "difficulty": 23.181818181818183,
+        "volume": 865,
+        "effort": 20052.272727272728,
+        "bugs": 0.28833333333333333,
+        "time": 1114.0151515151515
+      },
+      "params": 3,
+      "line": 35,
+      "cyclomaticDensity": 56.86274509803921
+    },
+    {
+      "name": "compareCombs",
+      "sloc": {
+        "logical": 116,
+        "physical": 143
+      },
+      "cyclomatic": 48,
+      "halstead": {
+        "operators": {
+          "distinct": 16,
+          "total": 211,
+          "identifiers": [
+            "let",
+            "=",
+            "if",
+            "else",
+            ">",
+            ".",
+            "switch",
+            "case",
+            ":?",
+            "()",
+            "break",
+            "&&",
+            "!==",
+            "default",
+            "==",
+            "return"
+          ]
+        },
+        "operands": {
+          "distinct": 25,
+          "total": 199,
+          "identifiers": [
+            "comb1",
+            "comb2",
+            "validity",
+            "containedValidity",
+            "checkA",
+            "checkB",
+            "checkSuit",
+            "comb",
+            0,
+            true,
+            false,
+            1,
+            2,
+            "rankA",
+            "rankB",
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            "\"!!! unexpected behaviour @game-logic.js\"",
+            "console",
+            "log"
+          ]
+        },
+        "length": 410,
+        "vocabulary": 41,
+        "difficulty": 63.68,
+        "volume": 2196.5963218934144,
+        "effort": 139879.25377817263,
+        "bugs": 0.7321987739644714,
+        "time": 7771.069654342924
+      },
+      "params": 2,
+      "line": 108,
+      "cyclomaticDensity": 41.37931034482759
+    },
+    {
+      "name": "isContained",
+      "sloc": {
+        "logical": 10,
+        "physical": 15
+      },
+      "cyclomatic": 4,
+      "halstead": {
+        "operators": {
+          "distinct": 10,
+          "total": 20,
+          "identifiers": [
+            "let",
+            "=",
+            "for",
+            "<",
+            "++ (postfix)",
+            "if",
+            "==",
+            ".",
+            "break",
+            "return"
+          ]
+        },
+        "operands": {
+          "distinct": 12,
+          "total": 24,
+          "identifiers": [
+            "dealtCards",
+            "totalCards",
+            "ammount",
+            "currentCall",
+            "total",
+            0,
+            "contains",
+            false,
+            "i",
+            "r",
+            "rankA",
+            true
+          ]
+        },
+        "length": 44,
+        "vocabulary": 22,
+        "difficulty": 10,
+        "volume": 196.21499122004107,
+        "effort": 1962.1499122004107,
+        "bugs": 0.06540499707334703,
+        "time": 109.00832845557836
+      },
+      "params": 4,
+      "line": 252,
+      "cyclomaticDensity": 40
+    },
+    {
+      "name": "isPaired",
+      "sloc": {
+        "logical": 13,
+        "physical": 15
+      },
+      "cyclomatic": 5,
+      "halstead": {
+        "operators": {
+          "distinct": 12,
+          "total": 30,
+          "identifiers": [
+            "let",
+            "=",
+            "for",
+            "<",
+            "++ (postfix)",
+            "if",
+            "==",
+            ".",
+            "&&",
+            ">=",
+            "break",
+            "return"
+          ]
+        },
+        "operands": {
+          "distinct": 15,
+          "total": 34,
+          "identifiers": [
+            "dealtCards",
+            "totalCards",
+            "ammount",
+            "currentCall",
+            "total",
+            0,
+            "totalB",
+            "contains",
+            false,
+            "i",
+            "r",
+            "rankA",
+            "rankB",
+            2,
+            true
+          ]
+        },
+        "length": 64,
+        "vocabulary": 27,
+        "difficulty": 13.6,
+        "volume": 304.312800138462,
+        "effort": 4138.654081883084,
+        "bugs": 0.10143760004615401,
+        "time": 229.9252267712824
+      },
+      "params": 4,
+      "line": 268,
+      "cyclomaticDensity": 38.46153846153847
+    },
+    {
+      "name": "isStraight",
+      "sloc": {
+        "logical": 12,
+        "physical": 17
+      },
+      "cyclomatic": 5,
+      "halstead": {
+        "operators": {
+          "distinct": 12,
+          "total": 26,
+          "identifiers": [
+            "let",
+            "=",
+            "for",
+            ".",
+            "<",
+            "+",
+            "++ (postfix)",
+            "if",
+            "==",
+            "break",
+            "! (prefix)",
+            "return"
+          ]
+        },
+        "operands": {
+          "distinct": 12,
+          "total": 29,
+          "identifiers": [
+            "dealtCards",
+            "totalCards",
+            "currentCall",
+            "contains",
+            false,
+            "i",
+            "rankA",
+            5,
+            "j",
+            0,
+            "r",
+            true
+          ]
+        },
+        "length": 55,
+        "vocabulary": 24,
+        "difficulty": 14.5,
+        "volume": 252.17293753966362,
+        "effort": 3656.5075943251227,
+        "bugs": 0.08405764584655454,
+        "time": 203.13931079584015
+      },
+      "params": 3,
+      "line": 284,
+      "cyclomaticDensity": 41.66666666666667
+    },
+    {
+      "name": "isFlush",
+      "sloc": {
+        "logical": 9,
+        "physical": 9
+      },
+      "cyclomatic": 4,
+      "halstead": {
+        "operators": {
+          "distinct": 11,
+          "total": 18,
+          "identifiers": [
+            "let",
+            "=",
+            "for",
+            "<",
+            "++ (postfix)",
+            "if",
+            "==",
+            ".",
+            "else",
+            ">",
+            "return"
+          ]
+        },
+        "operands": {
+          "distinct": 11,
+          "total": 20,
+          "identifiers": [
+            "dealtCards",
+            "totalCards",
+            "currentCall",
+            "total",
+            0,
+            "i",
+            "s",
+            "suit",
+            4,
+            true,
+            false
+          ]
+        },
+        "length": 38,
+        "vocabulary": 22,
+        "difficulty": 10,
+        "volume": 169.4584015082173,
+        "effort": 1694.584015082173,
+        "bugs": 0.05648613383607243,
+        "time": 94.14355639345405
+      },
+      "params": 3,
+      "line": 302,
+      "cyclomaticDensity": 44.44444444444444
+    },
+    {
+      "name": "isStraightFlush",
+      "sloc": {
+        "logical": 12,
+        "physical": 17
+      },
+      "cyclomatic": 5,
+      "halstead": {
+        "operators": {
+          "distinct": 12,
+          "total": 29,
+          "identifiers": [
+            "let",
+            "=",
+            "for",
+            "<",
+            "+",
+            "++ (postfix)",
+            "if",
+            "&&",
+            "==",
+            ".",
+            "break",
+            "return"
+          ]
+        },
+        "operands": {
+          "distinct": 14,
+          "total": 34,
+          "identifiers": [
+            "dealtCards",
+            "totalCards",
+            "currentCall",
+            "rank",
+            "contains",
+            false,
+            "i",
+            5,
+            "j",
+            0,
+            "r",
+            "s",
+            "suit",
+            true
+          ]
+        },
+        "length": 63,
+        "vocabulary": 26,
+        "difficulty": 14.57142857142857,
+        "volume": 296.12770224288886,
+        "effort": 4315.003661253523,
+        "bugs": 0.09870923408096295,
+        "time": 239.72242562519574
+      },
+      "params": 4,
+      "line": 312,
+      "cyclomaticDensity": 41.66666666666667
+    }
+  ],
+  "dependencies": [],
+  "maintainability": 80.86876246907924,
+  "loc": 30.125,
+  "cyclomatic": 13,
+  "effort": 23179.77993739529,
+  "params": 3
+}
