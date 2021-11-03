@@ -5,8 +5,8 @@ sonarqubeScanner(
     options: {
       "sonar.sources": ".",
       "sonar.inclusions":
-        "src/**,db/**,controllers/**,routes/**,modules/**,socks/**",
+        "prFile/*",
     },
   },
-  () => {}
+  () => { }
 );

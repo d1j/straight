@@ -36,7 +36,7 @@ function checkIfCombIsPresent(call, totalCards, dealtCards) {
   let combinationValid = false;
 
   switch (
-    call.comb //Checks each combination using functions;
+  call.comb //Checks each combination using functions;
   ) {
     case 0: //High card
       if (isContained(dealtCards, totalCards, 1, call)) combinationValid = true;
