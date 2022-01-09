@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const config = require("config");
-
+const mongoose = require("mongoose");
 const User = require("../models/User");
+
 
 /**
  * Adds new user or throws an error if: username or email is already taken.

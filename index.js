@@ -10,13 +10,18 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
-const Account = require("./routes/account");
-const Lobby = require("./routes/lobby");
-const Admin = require("./routes/admin");
+const Account = require("./src/routes/account");
+const Lobby = require("./src/routes/lobby");
+const Admin = require("./src/routes/admin");
 
-const socket = require("./socks/index");
+const socket = require("./src/socks/index");
 
-app.use(cors());
+
+let corsOptions = {
+  origin: '*'
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser());
 if (process.env.NODE_ENV !== "test") app.use(morgan("tiny"));
