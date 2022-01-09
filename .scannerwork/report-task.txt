@@ -2,5 +2,5 @@ projectKey=new_straight
 serverUrl=http://localhost:9000
 serverVersion=9.1.0.47736
 dashboardUrl=http://localhost:9000/dashboard?id=new_straight
-ceTaskId=AXznQn8GqGbCOkIo7q3h
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AXznQn8GqGbCOkIo7q3h
+ceTaskId=AX4-XUSN1Ky_3G_FBCdn
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AX4-XUSN1Ky_3G_FBCdn
