@@ -193,12 +193,7 @@ function isContained(dealtCards, totalCards, currentCall) {
   //Checks if a given ammount of a certain rank of cards are on the table;
   let total = 0;
   let contains = false;
-  let amountMap = {
-    0: 1,
-    1: 2,
-    3: 3,
-    7: 4
-  };
+  let amountMap = { 0: 1, 1: 2, 3: 3, 7: 4 };
   if (totalCards < amount) return false;
   let amount = amountMap[currentCall.comb]
   for (let i = 0; i < totalCards; i++) {

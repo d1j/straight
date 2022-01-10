@@ -186,8 +186,8 @@ function determineWinnerLoser(lobby) {
 }
 
 function getLoserWinnerIndexes(lobby, loserID, winnerID) {
-  let loser;
-  let winner;
+  let loser = -1;
+  let winner = -1;
   lobby.players.forEach(player => {
     if (player._id.toString() == loserID.toString()) {
       loser = player;
@@ -241,8 +241,8 @@ module.exports.processCheck = async (lobbyID) => {
     let result = {
       isPlayerOut: false,
       isGameOver: false,
-      lostPlayer: loser.playerID,
-      wonPlayer: winner.playerID,
+      lostPlayer: !loser.playerID,
+      wonPlayer: !winner.playerID,
     };
 
     if (loser.numCards == 4) {
