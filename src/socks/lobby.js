@@ -165,7 +165,7 @@ const disconnect = async ({ socket }) => {
 /** Emits the following:
  * 'message' Return data example: {playerID: 0, message: "Yes"}
  */
-const message = async ({ io, socket, message }) => {
+const sendmessage = async ({ io, socket, message }) => {
   try {
     let { userID, lobbyID } = socket.customProps;
     let playerID = await dbLob.getPlayerID(userID, lobbyID);
@@ -181,4 +181,4 @@ module.exports.leaveLobby = leaveLobby;
 module.exports.readyToStartGame = readyToStartGame;
 module.exports.hostStartsGame = hostStartsGame;
 module.exports.disconnect = disconnect;
-module.exports.message = message;
+module.exports.sendmessage = sendmessage;

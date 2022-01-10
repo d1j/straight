@@ -23,12 +23,12 @@ module.exports.initGame = async (lobbyID) => {
     //Find starting player
     let leastID = Number.MAX_SAFE_INTEGER;
     let startingID;
-    for (let i = 0; i < lobby.players.length; i++) {
-      if (lobby.players[i].playerID < leastID) {
-        leastID = lobby.players[i].playerID;
-        startingID = lobby.players[i]._id;
+    lobby.players.forEach((player) => {
+      if (player.playerID < leastID) {
+        leastID = player.playerID;
+        startingID = player._id;
       }
-    }
+    });
     //Set starting player
     lobby.currentPlayer = startingID;
     await lobby.save();
@@ -175,87 +175,99 @@ module.exports.getAllCards = async (lobbyID) => {
     };
  */
 //TODO: Restructure. Function is probably too big and complicated.
+
+function determineWinnerLoser(lobby) {
+  if (
+    gl.checkIfCombIsPresent(lobby.currentCall, lobby.numCards, lobby.cards)
+  ) {
+    return { loserID: lobby.currentPlayer, winnerID: lobby.previousPlayer };
+  }
+  return { loserID: lobby.previousPlayer, winnerID: lobby.currentPlayer };
+}
+
+function getLoserWinnerIndexes(lobby, loserID, winnerID) {
+  let loser;
+  let winner;
+  lobby.players.forEach(player => {
+    if (player._id.toString() == loserID.toString()) {
+      loser = player;
+    }
+    if (player._id.toString() == winnerID.toString()) {
+      winner = player;
+    }
+  })
+  return { loser, winner }
+}
+
+function setGameOver(result, lobby, winnerID, loserID) {
+  result.isGameOver = true;
+
+  lobby.currentCall = { comb: -1, rankA: -1, rankB: -1, suit: -1 };
+  lobby.status = "open";
+  lobby.cards = [];
+  lobby.currentPlayer = null;
+  lobby.previousPlayer = null;
+  lobby.numCards = null;
+
+  for (let i = 0; i < lobby.players.length; i++) {
+    lobby.players[i].status = "playing";
+    lobby.players[i].cards = [];
+    lobby.players[i].numCards = -1;
+    let user = await User.findOne({ _id: lobby.players[i]._id });
+    if (user._id.toString() == winnerID.toString()) {
+      user.wonGames.first++;
+    } else if (user._id.toString() == loserID.toString()) {
+      user.wonGames.second++;
+    }
+    user.playedGames++;
+    await user.save();
+  }
+  await lobby.save();
+  return result;
+}
+
 module.exports.processCheck = async (lobbyID) => {
   try {
     let lobby = await Lobby.findOne({
       _id: mongoose.Types.ObjectId(lobbyID),
     });
 
-    //TOOD: Check if a call has been made yet.
+    let { loserID, winnerID } = determineWinnerLoser(lobby)
 
-    //Check if the call forms up and determine winner/loser.
-    let loserID, winnerID;
-    if (
-      gl.checkIfCombIsPresent(lobby.currentCall, lobby.numCards, lobby.cards)
-    ) {
-      loserID = lobby.currentPlayer;
-      winnerID = lobby.previousPlayer;
-    } else {
-      loserID = lobby.previousPlayer;
-      winnerID = lobby.currentPlayer;
-    }
     //Check if lost player does not get a 5th card.
-    let loserIndex, winnerIndex;
-    for (let i = 0; i < lobby.players.length; i++) {
-      if (lobby.players[i]._id.toString() == loserID.toString()) {
-        loserIndex = i;
-      }
-      if (lobby.players[i]._id.toString() == winnerID.toString()) {
-        winnerIndex = i;
-      }
-    }
+    let { loser, winner } = getLoserWinnerIndexes(lobby, loserID, winnerID);
+
 
     let result = {
       isPlayerOut: false,
       isGameOver: false,
-      lostPlayer: lobby.players[loserIndex].playerID,
-      wonPlayer: lobby.players[winnerIndex].playerID,
+      lostPlayer: loser.playerID,
+      wonPlayer: winner.playerID,
     };
 
-    if (lobby.players[loserIndex].numCards == 4) {
+    if (loser.numCards == 4) {
       //Player is out of the game.
-      lobby.players[loserIndex].numCards = -1;
-      lobby.players[loserIndex].status = "spectating";
-      lobby.players[loserIndex].cards = [];
+      loser.numCards = -1;
+      loser.status = "spectating";
+      loser.cards = [];
       lobby.numCards -= 4;
       result.isPlayerOut = true;
       //Check if lost player did not end the game.
       let numPlayersLeft = 0;
-      for (let i = 0; i < lobby.players.length; i++) {
-        if (lobby.players[i].status == "playing") {
+
+      lobby.players.forEach(player => {
+        if (player.status == "playing") {
           numPlayersLeft++;
         }
-      }
+      });
+
       if (numPlayersLeft < 2) {
         //The game should end.
-        result.isGameOver = true;
-
-        lobby.currentCall = { comb: -1, rankA: -1, rankB: -1, suit: -1 };
-        lobby.status = "open";
-        lobby.cards = [];
-        lobby.currentPlayer = null;
-        lobby.previousPlayer = null;
-        lobby.numCards = null;
-
-        for (let i = 0; i < lobby.players.length; i++) {
-          lobby.players[i].status = "playing";
-          lobby.players[i].cards = [];
-          lobby.players[i].numCards = -1;
-          let user = await User.findOne({ _id: lobby.players[i]._id });
-          if (user._id.toString() == winnerID.toString()) {
-            user.wonGames.first++;
-          } else if (user._id.toString() == loserID.toString()) {
-            user.wonGames.second++;
-          }
-          user.playedGames++;
-          await user.save();
-        }
-        await lobby.save();
-        return result;
+        return setGameOver(result, lobby, winnerID, loserID);
       }
     } else {
       //Player gets another card.
-      lobby.players[loserIndex].numCards++;
+      loser.numCards++;
       lobby.numCards++;
     }
 

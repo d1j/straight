@@ -16,12 +16,6 @@ const Admin = require("./src/routes/admin");
 
 const socket = require("./src/socks/index");
 
-
-let corsOptions = {
-  origin: '*'
-};
-
-app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser());
 if (process.env.NODE_ENV !== "test") app.use(morgan("tiny"));

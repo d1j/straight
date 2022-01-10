@@ -130,12 +130,14 @@ function compareCombs(comb1, comb2) {
   if (comb1.comb > comb2.comb) {
     switch (comb1.comb) {
       case 0: //HIGH
-        checkA() ? (validity = true) : (validity = false);
+        if (checkA()) validity = true;
+        else validity = false;
         break;
       case 1: //PAIR
         checkA() ? (validity = true) : (validity = false);
         break;
       case 2: //TWO PAIR
+      case 6: //FULL HOUSE
         checkA() && checkB() && comb1.rankA !== comb1.rankB
           ? (validity = true)
           : (validity = false);
@@ -148,11 +150,6 @@ function compareCombs(comb1, comb2) {
         break;
       case 5: //FLUSH
         checkSuit() ? (validity = true) : (validity = false);
-        break;
-      case 6: //FULL HOUSE
-        checkA() && checkB() && comb1.rankA !== comb1.rankB
-          ? (validity = true)
-          : (validity = false);
         break;
       case 7: //FOUR
         checkA() ? (validity = true) : (validity = false);

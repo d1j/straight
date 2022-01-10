@@ -12,17 +12,17 @@ const register = async (req, res) => {
 
     //Check if provided creds meet length requirements.
     if (req.body.username.length < userAccCredReqs.minUserLength)
-      throw `Username is too short. Min length required: ${userAccCredReqs.minUserLength}`;
+      throw new Error(`Username is too short. Min length required: ${userAccCredReqs.minUserLength}`);
     if (req.body.username.length > userAccCredReqs.maxUserLength)
-      throw `Username is too long. Max length: ${userAccCredReqs.maxUserLength}`;
+      throw new Error(`Username is too long. Max length: ${userAccCredReqs.maxUserLength}`);
     if (req.body.password.length < userAccCredReqs.minPassLength)
-      throw `Password is too short. Min length required: ${userAccCredReqs.minPassLength}`;
+      throw new Error(`Password is too short. Min length required: ${userAccCredReqs.minPassLength}`);
     if (req.body.password.length > userAccCredReqs.maxPassLength)
-      throw `Password is too long. Max length: ${userAccCredReqs.maxPassLength}`;
+      throw new Error(`Password is too long. Max length: ${userAccCredReqs.maxPassLength}`);
 
     //Check if e-mail format is valid
     if (!isEmail(req.body.email)) {
-      throw "The entered e-mail is not valid.";
+      throw new Error("The entered e-mail is not valid.");
     }
 
     //Register new user

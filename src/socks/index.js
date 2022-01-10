@@ -8,7 +8,7 @@ const lobSock = require("./lobby");
 const gameSock = require("./game");
 
 module.exports.init = (http) => {
-  io = socketio(http);
+  let io = socketio(http);
 
   //middleware for query data extraction
   io.use(async (socket, next) => {
@@ -82,7 +82,7 @@ module.exports.init = (http) => {
 
     /** Should be called when user wants to send a message to the whole lobby. */
     socket.on("message", async (message) => {
-      lobSock.message({ io, socket, message });
+      lobSock.sendmessage({ io, socket, message });
     });
 
     /** Should be called when making a new call in the game. */

@@ -29,7 +29,6 @@ function findUser(userID) {
   for (let i = 0; i < USP.length; i++) {
     if (USP[i].userID == userID) {
       return { found: true, index: i };
-      console.log(userID);
     }
   }
   return { found: false, index: -1 };

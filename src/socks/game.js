@@ -15,7 +15,7 @@ const call = async ({ socket, io, data }) => {
       throw `!!! User ${userID} is not a current player in ${lobbyID}.`;
 
     let processedData = await dbGame.processCall(data, lobbyID);
-    if (processedData.isCallValid == true) {
+    if (processedData.isCallValid) {
       //call is valid
       io.to(lobbyID).emit("player-called", data);
       setTimeout(function () {

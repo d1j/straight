@@ -1,14 +1,14 @@
-version: '3.4'
+version: "3.4"
 
 services:
   straight-back:
     image: straight-back
     build:
-      context: ./straight/
+      context: ./
       dockerfile: Dockerfile
     ports:
-    - "3000:3000"
+      - "3000:3000"
   mongodb:
     image: mongo
     ports:
-    - "27017:27017"
+      - "27017:27017"
