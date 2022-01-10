@@ -4,11 +4,11 @@ const config = require("config");
 const tools = require("../util/tools");
 const dbAcc = require("../db/manage-account");
 
+const userAccCredReqs = config.get("userAccCredReqs");
+
 const register = async (req, res) => {
   try {
     tools.contentCheck(req.body, ["username", "password", "email"]);
-
-    let userAccCredReqs = config.get("userAccCredReqs");
 
     //Check if provided creds meet length requirements.
     if (req.body.username.length < userAccCredReqs.minUserLength)

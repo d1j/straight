@@ -199,7 +199,7 @@ function getLoserWinnerIndexes(lobby, loserID, winnerID) {
   return { loser, winner }
 }
 
-function setGameOver(result, lobby, winnerID, loserID) {
+async function setGameOver(result, lobby, winnerID, loserID) {
   result.isGameOver = true;
 
   lobby.currentCall = { comb: -1, rankA: -1, rankB: -1, suit: -1 };
@@ -263,7 +263,7 @@ module.exports.processCheck = async (lobbyID) => {
 
       if (numPlayersLeft < 2) {
         //The game should end.
-        return setGameOver(result, lobby, winnerID, loserID);
+        return await setGameOver(result, lobby, winnerID, loserID);
       }
     } else {
       //Player gets another card.

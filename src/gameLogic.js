@@ -28,6 +28,7 @@ function dealCards(numCards) {
   return dealtCards;
 }
 
+
 /**Checks a call.
  * Returns true, if combination exists.
  * Returns false otherwise.
@@ -35,71 +36,13 @@ function dealCards(numCards) {
 function checkIfCombIsPresent(call, totalCards, dealtCards) {
   let combinationValid = false;
 
-  switch (
-  call.comb //Checks each combination using functions;
-  ) {
-    case 0: //High card
-      if (isContained(dealtCards, totalCards, 1, call)) combinationValid = true;
-      break;
-
-    case 1: //Pair
-      if (isContained(dealtCards, totalCards, 2, call)) combinationValid = true;
-      break;
-
-    case 2: //Two Pairs
-      if (totalCards > 3) {
-        if (isPaired(dealtCards, totalCards, 2, call)) combinationValid = true;
-      }
-      break;
-
-    case 3: //Three of a kind
-      if (totalCards > 2) {
-        if (isContained(dealtCards, totalCards, 3, call))
-          combinationValid = true;
-      }
-      break;
-
-    case 4: //Straight
-      if (totalCards > 4) {
-        if (isStraight(dealtCards, totalCards, call)) combinationValid = true;
-      }
-      break;
-
-    case 5: //Flush
-      if (totalCards > 4) {
-        if (isFlush(dealtCards, totalCards, call)) combinationValid = true;
-      }
-      break;
-
-    case 6: //Full house
-      if (totalCards > 4) {
-        if (isPaired(dealtCards, totalCards, 3, call)) combinationValid = true;
-      }
-      break;
-
-    case 7: //Four of a kind
-      if (totalCards > 3) {
-        if (isContained(dealtCards, totalCards, 4, call))
-          combinationValid = true;
-      }
-      break;
-
-    case 8: //Straight from 9 flush
-      if (totalCards > 4) {
-        if (isStraightFlush(dealtCards, totalCards, call, 0))
-          combinationValid = true;
-      }
-      break;
-
-    case 9: //Royal flush
-      if (totalCards > 4) {
-        if (isStraightFlush(dealtCards, totalCards, call, 1))
-          combinationValid = true;
-      }
-      break;
-  }
-  return combinationValid;
+  return isContained(dealtCards, totalCards, call)
+    || isPaired(dealtCards, totalCards, call)
+    || isStraight(dealtCards, totalCards, call)
+    || isFlush(dealtCards, totalCards, call)
+    || isStraightFlush(dealtCards, totalCards, call);
 }
+
 
 /**Compares two combinations and returns Boolean(true) if the first combintion is greater than the second one.
  * Returns Boolean(false) otherwise.
@@ -246,14 +189,22 @@ function compareCombs(comb1, comb2) {
   return validity;
 }
 
-function isContained(dealtCards, totalCards, ammount, currentCall) {
+function isContained(dealtCards, totalCards, currentCall) {
   //Checks if a given ammount of a certain rank of cards are on the table;
   let total = 0;
   let contains = false;
+  let amountMap = {
+    0: 1,
+    1: 2,
+    3: 3,
+    7: 4
+  };
+  if (totalCards < amount) return false;
+  let amount = amountMap[currentCall.comb]
   for (let i = 0; i < totalCards; i++) {
-    if (dealtCards[i].r == currentCall.rankA) {
+    if (dealtCards[i].r == currentCall.rankA && [0, 1, 3, 7].includes(currentCall.comb)) {
       total++;
-      if (total == ammount) {
+      if (total == amount) {
         contains = true;
         break;
       }
@@ -262,15 +213,22 @@ function isContained(dealtCards, totalCards, ammount, currentCall) {
   return contains;
 }
 
-function isPaired(dealtCards, totalCards, ammount, currentCall) {
+function isPaired(dealtCards, totalCards, currentCall) {
   //Checks if there is a pair or a full house of given rank cards;
   let total = 0;
   let totalB = 0;
   let contains = false;
+
+  let amountMap = { 2: 2, 6: 3 };
+  let amount = amountMap[currentCall.comb]
+
+  if (amount == 2 && totalCards < 4) return false;
+  if (amount == 6 && totalCards < 5) return false;
+
   for (let i = 0; i < totalCards; i++) {
     if (dealtCards[i].r == currentCall.rankA) total++;
     if (dealtCards[i].r == currentCall.rankB) totalB++;
-    if (total >= ammount && totalB >= 2) {
+    if (total >= amount && totalB >= 2) {
       contains = true;
       break;
     }
@@ -280,6 +238,8 @@ function isPaired(dealtCards, totalCards, ammount, currentCall) {
 
 function isStraight(dealtCards, totalCards, currentCall) {
   //Checks if there is a straight from a given rank;
+  if (totalCards < 5) return false;
+
   let contains = false;
   for (let i = currentCall.rankA; i < 5 + currentCall.rankA; i++) {
     contains = false;
@@ -297,6 +257,7 @@ function isStraight(dealtCards, totalCards, currentCall) {
 }
 
 function isFlush(dealtCards, totalCards, currentCall) {
+  if (totalCards < 5) return false;
   //Checks if there is a flush on the table of the given suit;
   let total = 0;
   for (let i = 0; i < totalCards; i++) {
@@ -306,7 +267,10 @@ function isFlush(dealtCards, totalCards, currentCall) {
   else return false;
 }
 
-function isStraightFlush(dealtCards, totalCards, currentCall, rank) {
+function isStraightFlush(dealtCards, totalCards, currentCall) {
+  if (totalCards < 5) return false;
+  let rankMap = { 8: 0, 9: 1 };
+  let rank = rankMap[currentCall.comb];
   //Checks if there is a straight flush of a given suit from a certain rank;
   let contains = false;
   for (let i = rank; i < 5 + rank; i++) {
